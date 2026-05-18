@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlgoVision Pro | Sorting Analytics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="shortcut icon" href="favicon.svg">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div id="app" class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 18L10 12L4 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 18H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>AlgoVision</span>
+                </div>
+            </div>
+
+            <div class="sidebar-content">
+                <div class="control-group">
+                    <label>Algorithm</label>
+                    <select id="algo-select" class="premium-select">
+                        <option value="bubble">Bubble Sort</option>
+                        <option value="insertion">Insertion Sort</option>
+                        <option value="selection">Selection Sort</option>
+                        <option value="merge">Merge Sort</option>
+                        <option value="quick">Quick Sort</option>
+                        <option value="heap">Heap Sort</option>
+                        <option value="shell">Shell Sort</option>
+                        <option value="counting">Counting Sort</option>
+                        <option value="radix">Radix Sort</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Dataset Type</label>
+                    <select id="dataset-select" class="premium-select">
+                        <option value="random">Random</option>
+                        <option value="sorted">Nearly Sorted</option>
+                        <option value="reversed">Reversed</option>
+                        <option value="few-unique">Few Unique</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Array Size: <span id="size-val">50</span></label>
+                    <input type="range" id="size-slider" min="10" max="500" value="50" class="premium-slider">
+                </div>
+
+                <div class="control-group">
+                    <label>Speed: <span id="speed-val">Fast</span></label>
+                    <input type="range" id="speed-slider" min="1" max="100" value="80" class="premium-slider">
+                </div>
+
+                <div class="control-group">
+                    <label>Visual Mode</label>
+                    <select id="visual-mode-select" class="premium-select">
+                        <option value="bars">Bars</option>
+                        <option value="dots">Dots</option>
+                        <option value="spiral">Spiral</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Audio Preset</label>
+                    <select id="audio-preset-select" class="premium-select">
+                        <option value="modern" selected>Modern</option>
+                        <option value="soft">Soft</option>
+                        <option value="digital">Digital</option>
+                        <option value="synth">Synth</option>
+                        <option value="minimal">Minimal</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Volume: <span id="vol-val">50%</span></label>
+                    <input type="range" id="volume-slider" min="0" max="100" value="50" class="premium-slider">
+                </div>
+                
+                <button id="generate-btn" class="btn btn-secondary">Generate New Array</button>
+                <div class="action-buttons">
+                    <button id="start-btn" class="btn btn-primary">Start Sort</button>
+                    <button id="pause-btn" class="btn btn-icon" title="Pause/Resume">⏸️</button>
+                    <button id="step-btn" class="btn btn-icon" title="Step Forward">⏭️</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <h1 class="page-title">Real-Time Visualization</h1>
+                </div>
+                <div class="topbar-right">
+                    <button id="benchmark-mode-btn" class="btn btn-outline">Benchmark Mode</button>
+                    <button id="compare-mode-btn" class="btn btn-outline">Compare Mode</button>
+                    <button id="sound-toggle" class="icon-btn" title="Toggle Sound">🔊</button>
+                    <button id="theme-toggle" class="icon-btn" title="Toggle Theme">🌙</button>
+                    <button id="export-btn" class="icon-btn" title="Export Results">💾</button>
+                </div>
+            </header>
+
+            <div class="workspace">
+                <!-- Visualization Area -->
+                <div class="visualization-panel glass-panel">
+                    <div id="canvas-container">
+                        <canvas id="visualizer-canvas"></canvas>
+                    </div>
+                    <div class="metrics-overlay">
+                        <div class="metric-box">
+                            <span class="metric-label">Comparisons</span>
+                            <span class="metric-value" id="metric-comparisons">0</span>
+                        </div>
+                        <div class="metric-box">
+                            <span class="metric-label">Swaps</span>
+                            <span class="metric-value" id="metric-swaps">0</span>
+                        </div>
+                        <div class="metric-box">
+                            <span class="metric-label">Time</span>
+                            <span class="metric-value" id="metric-time">0.00ms</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Side Panel (Code & Explanation) -->
+                <div class="info-panel glass-panel">
+                    <div class="tabs">
+                        <button class="tab active" data-target="code-tab">Code</button>
+                        <button class="tab" data-target="explain-tab">Explanation</button>
+                    </div>
+                    <div class="tab-content" id="code-tab">
+                        <div class="code-header">
+                            <select id="lang-select" class="mini-select">
+                                <option value="js">JavaScript</option>
+                                <option value="py">Python</option>
+                                <option value="cpp">C++</option>
+                            </select>
+                        </div>
+                        <pre><code id="code-display" class="language-javascript"></code></pre>
+                    </div>
+                    <div class="tab-content hidden" id="explain-tab">
+                        <div class="ai-explanation">
+                            <h3>How it works</h3>
+                            <p id="algo-desc">Select an algorithm to see its explanation.</p>
+                            <div class="complexity-info">
+                                <div class="comp-box"><span>Time (Best):</span><strong id="time-best">O(n)</strong></div>
+                                <div class="comp-box"><span>Time (Avg):</span><strong id="time-avg">O(n²)</strong></div>
+                                <div class="comp-box"><span>Time (Worst):</span><strong id="time-worst">O(n²)</strong></div>
+                                <div class="comp-box"><span>Space:</span><strong id="space-comp">O(1)</strong></div>
+                            </div>
+                            <div id="live-step-explanation" class="step-explanation">
+                                Ready to sort.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Panel (Charts) -->
+            <div class="analytics-panel glass-panel">
+                <div class="panel-header">
+                    <h2>Performance Analytics</h2>
+                </div>
+                <div class="charts-container">
+                    <div class="chart-wrapper">
+                        <canvas id="time-chart"></canvas>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="complexity-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Benchmarking Overlay (Hidden by default) -->
+            <div id="benchmark-overlay" class="overlay hidden">
+                <div class="modal glass-panel">
+                    <div class="modal-header">
+                        <h2>Automated Benchmarking</h2>
+                        <button class="close-btn" id="close-benchmark">×</button>
+                    </div>
+                    <div class="modal-content">
+                        <div class="benchmark-controls">
+                            <button id="run-benchmark-btn" class="btn btn-primary">Run Full Benchmark</button>
+                        </div>
+                        <div class="benchmark-results">
+                            <table class="premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>Algorithm</th>
+                                        <th>N=100</th>
+                                        <th>N=1000</th>
+                                        <th>N=5000</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="benchmark-tbody">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compare Overlay -->
+            <div id="compare-overlay" class="overlay hidden">
+                <div class="modal glass-panel" style="max-width: 1200px; width: 95%;">
+                    <div class="modal-header">
+                        <h2>Side-by-Side Comparison</h2>
+                        <button class="close-btn" id="close-compare">×</button>
+                    </div>
+                    <div class="modal-content">
+                        <div class="benchmark-controls" style="display: flex; gap: 20px; justify-content: center; margin-bottom: 20px;">
+                            <select id="compare-algo-1" class="premium-select">
+                                <option value="bubble">Bubble Sort</option>
+                                <option value="insertion">Insertion Sort</option>
+                                <option value="selection">Selection Sort</option>
+                                <option value="merge">Merge Sort</option>
+                                <option value="quick">Quick Sort</option>
+                                <option value="heap">Heap Sort</option>
+                            </select>
+                            <span style="display:flex; align-items:center; font-weight:bold; color:var(--text-muted)">VS</span>
+                            <select id="compare-algo-2" class="premium-select">
+                                <option value="quick" selected>Quick Sort</option>
+                                <option value="merge">Merge Sort</option>
+                                <option value="heap">Heap Sort</option>
+                                <option value="bubble">Bubble Sort</option>
+                                <option value="insertion">Insertion Sort</option>
+                                <option value="selection">Selection Sort</option>
+                            </select>
+                            <button id="start-compare-btn" class="btn btn-primary">Start Race</button>
+                        </div>
+                        <div style="display: flex; gap: 20px; height: 400px;">
+                            <div class="visualization-panel glass-panel" style="flex: 1; padding: 10px; display:flex; flex-direction:column">
+                                <div style="flex:1; position: relative; width: 100%;">
+                                    <canvas id="compare-canvas-1"></canvas>
+                                </div>
+                                <div style="text-align: center; font-weight: bold; margin-top: 10px; font-size:1.2rem; min-height: 24px;" id="compare-winner-1"></div>
+                            </div>
+                            <div class="visualization-panel glass-panel" style="flex: 1; padding: 10px; display:flex; flex-direction:column">
+                                <div style="flex:1; position: relative; width: 100%;">
+                                    <canvas id="compare-canvas-2"></canvas>
+                                </div>
+                                <div style="text-align: center; font-weight: bold; margin-top: 10px; font-size:1.2rem; min-height: 24px;" id="compare-winner-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
